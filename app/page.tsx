@@ -55,6 +55,9 @@ export default function Home() {
     staleTime: 1000 * 60 * 60,
   });
 
+  // Memoized so Object.keys() only runs when the currencies object reference changes
+  const hasCurrencies = useMemo(() => Object.keys(currencies).length > 0, [currencies]);
+
   // 3. SMART DEFAULT: Detect user's local currency if no preference is stored.
   useEffect(() => {
     if (!fromLoaded || !hasCurrencies) return;
@@ -78,7 +81,7 @@ export default function Home() {
         })
         .catch(err => console.error('[System] Smart Default Detection failed:', err));
     }
-  }, [fromLoaded, currencies, setFrom, to, setTo]);
+  }, [fromLoaded, hasCurrencies, currencies, setFrom, to, setTo]);
 
   // 4. DYNAMIC STATUS: Check if the system is online by pinging the health endpoint.
   // queryKey includes from/to so the check re-runs when the user changes currencies.
@@ -94,7 +97,7 @@ export default function Home() {
       return res.json();
     },
     // Stop auto-polling when already offline — user must click Retry to recover
-    refetchInterval: (query: any) => (query.state.data?.status === 'DOWN' ? false : 30000),
+    refetchInterval: (query) => (query.state.data?.status === 'DOWN' ? false : 30000),
   });
 
   // 5. GLOBAL TIMEOUT LISTENER: If any query (conversion, trend, etc.) times out,
@@ -104,8 +107,9 @@ export default function Home() {
   useEffect(() => {
     const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
       if (event.type === 'updated' && event.action.type === 'error') {
-        const error = event.action.error as any;
-        if (error?.message?.toLowerCase().includes('timed out') && !timeoutRefetchPending.current) {
+        const error = event.action.error;
+        const message = error instanceof Error ? error.message : '';
+        if (message.toLowerCase().includes('timed out') && !timeoutRefetchPending.current) {
           timeoutRefetchPending.current = true;
           console.warn('[System] Global Timeout detected. Verifying system health...');
           // Small delay to batch any near-simultaneous timeout events
@@ -125,8 +129,6 @@ export default function Home() {
   const isOnline = systemStatus === 'UP';
   const isSlow = systemStatus === 'SLOW';
   const isOffline = systemStatus === 'DOWN';
-  // Memoized so Object.keys() only runs when the currencies object reference changes
-  const hasCurrencies = useMemo(() => Object.keys(currencies).length > 0, [currencies]);
 
   return (
     <main className="min-h-screen relative py-12 px-4 md:px-8 space-y-12 overflow-hidden text-white">

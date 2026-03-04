@@ -3,6 +3,8 @@ import { getPastDate } from '@/utils/dateUtils';
 import { apiCache } from '@/utils/cache';
 import { robustFetch } from '@/utils/fetcher';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const from = searchParams.get('from');
@@ -19,7 +21,7 @@ export async function GET(request: NextRequest) {
     const endDate = getPastDate(0);   // Today
 
     const cacheKey = `compare_${from}_${to}_${startDate}_${endDate}`;
-    const cachedData = apiCache.get<any>(cacheKey);
+    const cachedData = apiCache.get<{ from: string; to: string; currentRate: number; previousRate: number; absoluteChange: number; percentageChange: number; trend: string; date: string; history: { date: string; rate: number }[] }>(cacheKey);
 
     if (cachedData) {
         console.log(`[Cache] Serving trend ${from}->${to} from cache`);
@@ -67,7 +69,7 @@ export async function GET(request: NextRequest) {
         apiCache.set(cacheKey, result, 300);
 
         return NextResponse.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Trend API Error:', error);
         return NextResponse.json(
             { message: 'Failed to fetch trend data' },

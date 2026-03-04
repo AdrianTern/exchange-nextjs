@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { apiCache } from '@/utils/cache';
 import { robustFetch } from '@/utils/fetcher';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const from = searchParams.get('from');
@@ -28,7 +30,7 @@ export async function GET(request: NextRequest) {
     }
 
     const cacheKey = `convert_${from}_${to}_${amountStr}`;
-    const cachedData = apiCache.get<any>(cacheKey);
+    const cachedData = apiCache.get<{ from: string; to: string; amount: number; rate: number; convertedAmount: number; date: string }>(cacheKey);
 
     if (cachedData) {
         console.log(`[Cache] Serving conversion ${from}->${to} from cache`);
@@ -54,7 +56,7 @@ export async function GET(request: NextRequest) {
         apiCache.set(cacheKey, result, 300);
 
         return NextResponse.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Convert API Error:', error);
         return NextResponse.json(
             { message: 'Failed to perform currency conversion' },

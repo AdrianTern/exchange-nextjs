@@ -26,13 +26,13 @@ export async function GET(request: Request) {
             latency,
             message: status === 'SLOW' ? 'Upstream API is experiencing high latency' : 'System Operational'
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Health Check Error:', error);
-
+        const message = error instanceof Error ? error.message : 'Unknown error';
         return NextResponse.json({
             status: 'DOWN',
             message: 'Upstream API is unreachable or timed out',
-            error: error.message
+            error: message
         }, { status: 503 });
     }
 }
