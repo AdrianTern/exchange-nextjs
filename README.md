@@ -2,7 +2,8 @@
 
 A premium, high-performance currency converter and trend analysis dashboard built with **Next.js 14**, **TypeScript**, and **TanStack Query**.
 
-![App Screenshot](file:///c:/Users/yoeth/Documents/exchange-next/exchange/public/screenshot.png) *(Note: Ensure a screenshot is available at this path)*
+<img width="1292" height="1110" alt="image" src="https://github.com/user-attachments/assets/8920ee60-f31a-405e-adfc-2be08070d221" />
+
 
 ## 🚀 Key Features
 
