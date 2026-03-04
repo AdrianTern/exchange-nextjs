@@ -34,3 +34,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# project-specific debug & temp files
+api_output.txt
+lint_errors.txt
+lint_results.txt
+tsc_errors*.txt
+nextjs_master_prompt.md.resolved
+null
+
+# legacy src directory (replaced by app/)
+/src
