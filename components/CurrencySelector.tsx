@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, memo } from 'react';
+import Image from 'next/image';
 import { Search, ChevronDown } from 'lucide-react';
 import { getFlagUrl } from '@/utils/currencyToCountry';
 
@@ -73,7 +74,14 @@ const CurrencySelector = memo(function CurrencySelector({
             >
                 <div className="flex items-center gap-3">
                     {flagUrl && (
-                        <img src={flagUrl} alt={value} className="w-6 h-4 object-cover rounded shadow-sm" />
+                        <Image
+                            src={flagUrl}
+                            alt={`${value} flag`}
+                            width={24}
+                            height={16}
+                            className="w-6 h-4 object-cover rounded shadow-sm"
+                            unoptimized
+                        />
                     )}
                     <span className="font-bold text-lg text-white group-hover:text-indigo-300 transition-colors">
                         {value}
@@ -118,7 +126,14 @@ const CurrencySelector = memo(function CurrencySelector({
                                     >
                                         <div className="shrink-0">
                                             {itemFlag ? (
-                                                <img src={itemFlag} alt={code} className="w-6 h-4 object-cover rounded shadow-sm" />
+                                                <Image
+                                                    src={itemFlag}
+                                                    alt={`${code} flag`}
+                                                    width={24}
+                                                    height={16}
+                                                    className="w-6 h-4 object-cover rounded shadow-sm"
+                                                    unoptimized
+                                                />
                                             ) : (
                                                 <div className="w-6 h-4 bg-white/5 rounded border border-white/10 flex items-center justify-center text-[8px] text-gray-500 uppercase">
                                                     {code.slice(0, 2)}
